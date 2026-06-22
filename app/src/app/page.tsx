@@ -225,6 +225,13 @@ export default function Home() {
       }
   };
 
+  const playSfx = (soundUrl: string) => {
+      if (!audioEnabled || !oneShotAudioRef.current) return;
+      oneShotAudioRef.current.src = soundUrl;
+      oneShotAudioRef.current.volume = audioEnabled ? masterVolume : 0;
+      oneShotAudioRef.current.play().catch(() => {});
+  };
+
   useEffect(() => { rankingRef.current = rankingSupervivencia; }, [rankingSupervivencia]);
 
   // DISTRIBUTION LOGIC
@@ -241,8 +248,8 @@ export default function Home() {
               if (misBloques.length > 0) {
                   const miGanancia = misBloques.length * pagoPorBloque;
                   setPozoComun(prev => Math.max(0, prev - miGanancia)); 
-                  setSaldoBilleteraJuego(prev => prev + miGanancia);    
-                  setTotalGanado(prev => prev + miGanancia);            
+                  setSaldoBilleteraJuego(prev => prev + miGanancia);
+                  setTotalGanado(prev => prev + miGanancia);
               }
               const bloquesOtros = currentRanking.length - misBloques.length;
               if (bloquesOtros > 0) {
@@ -283,6 +290,11 @@ export default function Home() {
     const intervalo = setInterval(() => {
         const nuevos: string[] = [];
         if (Math.random() < 0.3) { gameRef.current?.triggerFloorTrap(); nuevos.push("FLOOR CRACK 🕳️"); }
+        if (Math.random() < 0.3) { 
+            gameRef.current?.triggerFloorTrap(); 
+            playSfx('/sounds/trap.m4a'); // <-- Aquí se reproduce el sonido
+            nuevos.push("FLOOR CRACK 🕳️"); 
+        }
         if (Math.random() < 0.6) { gameRef.current?.triggerEarthquake(); nuevos.push("EARTHQUAKE 🌍"); }
         if (Math.random() < 0.35) { gameRef.current?.triggerFire(); nuevos.push("FIRE 🔥"); }
         if (Math.random() < 0.25) { gameRef.current?.triggerBlackHole(); nuevos.push("BLACK HOLE ⚫"); }
@@ -326,6 +338,7 @@ export default function Home() {
     try {
       const program = getProgram(); if (!program) return;
       const [pda] = PublicKey.findProgramAddressSync([Buffer.from("jugador"), publicKey.toBuffer()], PROGRAM_ID);
+      await program.methods.comprarBloques(new BN(1)).accounts({ jugadorStats: pda, user: publicKey, tesoreria: TESORERIA_WALLET, systemProgram: web3.SystemProgram.programId }).rpc();
       await program.methods.comprarBloques(new BN(1)).accounts({ jugadorStats: pda, user: publicKey, tesoreria: publicKey, systemProgram: web3.SystemProgram.programId }).rpc();
       setSaldoBilleteraJuego(prev => prev + amount); setMensaje(`Deposit Successful: ${amount} SOL`); setTimeout(() => setMensaje(""), 3000);
     } catch (error: any) { setMensaje("Error: " + error.message); setTimeout(() => setMensaje(""), 3000); } finally { setLoading(false); }
@@ -338,6 +351,16 @@ export default function Home() {
           setSaldoBilleteraJuego(prev => prev - costoActualBloque);
           setTotalInvertido(prev => prev + costoActualBloque);
           
+          const feeDev = costoActualBloque * 0.01; 
+          const aportePozo = costoActualBloque * 0.99; 
+
+          // Simula el envío de la comisión a la billetera designada (esto debería hacerse on-chain)
+          // Por ahora, solo es una simulación visual en la consola.
+          console.log(`Enviando ${feeDev.toFixed(6)} SOL de comisión a ${COMISION_WALLET.toString()}`);
+          // En una implementación real, aquí llamarías a una instrucción de tu programa
+          // que transfiera `feeDev` a la `COMISION_WALLET`.
+          // Ejemplo: await program.methods.pagarComision(new BN(feeDev * 1e9))...
+
           const feeDev = costoActualBloque * 0.01; const aportePozo = costoActualBloque * 0.99; 
           setPozoComun(prev => prev + aportePozo);
 
