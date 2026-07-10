@@ -361,8 +361,8 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [simulacionActiva]);
   
-  const cargarMisNFTs = async () => { if (!publicKey) return; setCargandoNFTs(true); try { const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata()); const assets = await fetchAllDigitalAssetByOwner(umi, umiPublicKey(publicKey.toString())); setMisNFTs(assets.map(a => ({ mint: a.publicKey, image: a.metadata.json?.image || 'https://via.placeholder.com/100x100/png' }))); } catch (e) { console.error("Error cargando NFTs:", e); } finally { setCargandoNFTs(false); } };
-  const getProgram = () => { if (!wallet) return null; const provider = new AnchorProvider(connection, wallet, { preflightCommitment: "processed" }); (idl as any).address = PROGRAM_ID.toString(); return new Program(idl as Idl, PROGRAM_ID, provider); };
+  const cargarMisNFTs = async () => { if (!publicKey) return; setCargandoNFTs(true); try { const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata()); const assets = await fetchAllDigitalAssetByOwner(umi, umiPublicKey(publicKey.toString())); setMisNFTs(assets.map(a => ({ mint: a.publicKey, image: (a.metadata as any).json?.image || 'https://via.placeholder.com/100x100/png' }))); } catch (e) { console.error("Error cargando NFTs:", e); } finally { setCargandoNFTs(false); } };
+  const getProgram = () => { if (!wallet) return null; const provider = new AnchorProvider(connection, wallet, { preflightCommitment: "processed" }); (idl as any).address = PROGRAM_ID.toString(); return new Program(idl as any as Idl, provider); };
   
   const depositarFondos = async () => {
     if (!publicKey || !wallet) return; const amount = parseFloat(montoDeposito); if (isNaN(amount) || amount <= 0) { setMensaje("Invalid Amount"); setTimeout(() => setMensaje(""), 3000); return; }
