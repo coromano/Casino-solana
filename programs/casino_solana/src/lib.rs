@@ -31,7 +31,9 @@ pub mod casino_solana { // <-- Nombre actualizado a tu proyecto
         
         // Costo = (Precio Base * Cantidad) + (Inflación * Bloques * Cantidad)
         // Simplificado: Precio Base * Cantidad (para no complicar la inflación en compras masivas por ahora)
-        let costo_total = (PRECIO_BASE + (jugador.bloques_activos * TASA_INFLACION)) * cantidad;
+        let inflacion_total = jugador.bloques_activos.checked_mul(TASA_INFLACION).ok_or(ErrorCode::MathOverflow)?;
+        let costo_base = PRECIO_BASE.checked_add(inflacion_total).ok_or(ErrorCode::MathOverflow)?;
+        let costo_total = costo_base.checked_mul(cantidad).ok_or(ErrorCode::MathOverflow)?;
 
         msg!("Comprando {} bloques. Costo total: {} Lamports", cantidad, costo_total);
 
@@ -46,7 +48,7 @@ pub mod casino_solana { // <-- Nombre actualizado a tu proyecto
         anchor_lang::system_program::transfer(cpi_context, costo_total)?;
 
         // Actualizar Estado
-        jugador.bloques_activos += cantidad;
+        jugador.bloques_activos = jugador.bloques_activos.checked_add(cantidad).ok_or(ErrorCode::MathOverflow)?;
         
         emit!(EventoBloqueComprado {
             jugador: ctx.accounts.user.key(),
@@ -68,9 +70,9 @@ pub mod casino_solana { // <-- Nombre actualizado a tu proyecto
         if segundos_pasados > 0 && jugador.bloques_activos > 0 {
             let recompensa = (jugador.bloques_activos as u64)
                 .checked_mul(segundos_pasados as u64)
-                .unwrap()
+                .ok_or(ErrorCode::MathOverflow)?
                 .checked_mul(RECOMPENSA_POR_SEGUNDO)
-                .unwrap();
+                .ok_or(ErrorCode::MathOverflow)?;
 
             // Actualizamos el timestamp (Simulación de pago)
             jugador.ultimo_cobro = tiempo_actual;
@@ -134,4 +136,10 @@ pub struct EventoBloqueComprado {
     pub jugador: Pubkey,
     pub costo_pagado: u64,
     pub total_bloques: u64,
+}
+
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Math operation resulted in overflow")]
+    MathOverflow,
 }
