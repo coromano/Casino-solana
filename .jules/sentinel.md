@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing Address Checks for Payment Destinations
+**Vulnerability:** A Solana Anchor smart contract (`ComprarBloque`) lacked an `address = EXPECTED_PUBKEY` constraint for a payment destination account (`tesoreria`). This allowed an attacker to pass their own wallet as the destination and effectively bypass paying for an item. The frontend even had an exploit call using this vulnerability.
+**Learning:** In Solana, any account can be passed in by a client. Smart contracts must enforce constraints on all accounts, especially those receiving funds or acting as authorities. Merely having an account defined in an Anchor struct is not enough to guarantee it's the *correct* account without explicit constraint checks.
+**Prevention:** Always use the `#[account(address = TARGET_PUBKEY)]` constraint or equivalent logic in the instruction handler to verify the pubkey of critical accounts, especially system wallets, treasuries, or administrative authorities.

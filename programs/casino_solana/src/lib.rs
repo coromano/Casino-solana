@@ -10,6 +10,8 @@ const PRECIO_BASE: u64 = 50_000_000; // 0.05 SOL
 const TASA_INFLACION: u64 = 15_000_000; // 0.015 SOL extra por bloque
 const RECOMPENSA_POR_SEGUNDO: u64 = 1_000_000; // 0.001 SOL por segundo
 
+pub const TESORERIA_WALLET: Pubkey = pubkey!("3n8oR22KYuHNfgMYZtuZAc27ufpEtU2rLNLFzgZe1Wrv");
+
 #[program]
 pub mod casino_solana { // <-- Nombre actualizado a tu proyecto
     use super::*;
@@ -109,7 +111,7 @@ pub struct ComprarBloque<'info> {
     #[account(mut)]
     pub user: Signer<'info>, 
     /// CHECK: Tesorería del juego
-    #[account(mut)]
+    #[account(mut, address = TESORERIA_WALLET)]
     pub tesoreria: AccountInfo<'info>, 
     pub system_program: Program<'info, System>,
 }

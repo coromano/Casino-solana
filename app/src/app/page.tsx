@@ -261,8 +261,8 @@ export default function Home() {
       oneShotAudioRef.current.play().catch(() => {});
   };
 
-  const TESORERIA_WALLET = new PublicKey("11111111111111111111111111111111");
-  const COMISION_WALLET = new PublicKey("11111111111111111111111111111111");
+  const TESORERIA_WALLET = new PublicKey("3n8oR22KYuHNfgMYZtuZAc27ufpEtU2rLNLFzgZe1Wrv");
+  const COMISION_WALLET = new PublicKey("3n8oR22KYuHNfgMYZtuZAc27ufpEtU2rLNLFzgZe1Wrv");
 
   useEffect(() => { rankingRef.current = rankingSupervivencia; }, [rankingSupervivencia]);
 
@@ -371,7 +371,6 @@ export default function Home() {
       const program = getProgram(); if (!program) return;
       const [pda] = PublicKey.findProgramAddressSync([Buffer.from("jugador"), publicKey.toBuffer()], PROGRAM_ID);
       await program.methods.comprarBloques(new BN(1)).accounts({ jugadorStats: pda, user: publicKey, tesoreria: TESORERIA_WALLET, systemProgram: web3.SystemProgram.programId }).rpc();
-      await program.methods.comprarBloques(new BN(1)).accounts({ jugadorStats: pda, user: publicKey, tesoreria: publicKey, systemProgram: web3.SystemProgram.programId }).rpc();
       setSaldoBilleteraJuego(prev => prev + amount); setMensaje(`Deposit Successful: ${amount} SOL`); setTimeout(() => setMensaje(""), 3000);
     } catch (error: any) { setMensaje("Error: " + error.message); setTimeout(() => setMensaje(""), 3000); } finally { setLoading(false); }
   };
