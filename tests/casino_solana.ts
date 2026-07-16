@@ -56,7 +56,7 @@ describe("casino_solana", () => {
       .accounts({
         jugadorStats: jugadorStatsPda,
         user: provider.wallet.publicKey,
-        tesoreria: provider.wallet.publicKey, // Nos pagamos a nosotros mismos para el test
+        tesoreria: new anchor.web3.PublicKey("81gyfzgZpJwGpbZo98TN2q9MbQBdzHwrK4TiSTUJfZhU"),
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
@@ -76,7 +76,7 @@ describe("casino_solana", () => {
       .accounts({
         jugadorStats: jugadorStatsPda,
         user: provider.wallet.publicKey,
-        tesoreria: provider.wallet.publicKey,
+        tesoreria: new anchor.web3.PublicKey("81gyfzgZpJwGpbZo98TN2q9MbQBdzHwrK4TiSTUJfZhU"),
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();

@@ -4,6 +4,8 @@ use anchor_lang::prelude::*;
 // IMPORTANTE: Esta ID es temporal. Luego la actualizaremos.
 declare_id!("9bygE6GBpYoj6Yz77VEJEy1Rpf59uaWHcdNdzFwbg6Yu");
 
+pub const TESORERIA_WALLET: Pubkey = pubkey!("81gyfzgZpJwGpbZo98TN2q9MbQBdzHwrK4TiSTUJfZhU");
+
 // --- CONSTANTES DE ECONOMÍA ---
 // 1 SOL = 1,000,000,000 Lamports
 const PRECIO_BASE: u64 = 50_000_000; // 0.05 SOL
@@ -109,7 +111,7 @@ pub struct ComprarBloque<'info> {
     #[account(mut)]
     pub user: Signer<'info>, 
     /// CHECK: Tesorería del juego
-    #[account(mut)]
+    #[account(mut, address = TESORERIA_WALLET @ CasinoError::InvalidTesoreria)]
     pub tesoreria: AccountInfo<'info>, 
     pub system_program: Program<'info, System>,
 }
@@ -134,4 +136,10 @@ pub struct EventoBloqueComprado {
     pub jugador: Pubkey,
     pub costo_pagado: u64,
     pub total_bloques: u64,
+}
+
+#[error_code]
+pub enum CasinoError {
+    #[msg("La cuenta de tesorería proporcionada es inválida.")]
+    InvalidTesoreria,
 }

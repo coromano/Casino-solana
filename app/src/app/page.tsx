@@ -261,7 +261,7 @@ export default function Home() {
       oneShotAudioRef.current.play().catch(() => {});
   };
 
-  const TESORERIA_WALLET = new PublicKey("11111111111111111111111111111111");
+  const TESORERIA_WALLET = new PublicKey("81gyfzgZpJwGpbZo98TN2q9MbQBdzHwrK4TiSTUJfZhU");
   const COMISION_WALLET = new PublicKey("11111111111111111111111111111111");
 
   useEffect(() => { rankingRef.current = rankingSupervivencia; }, [rankingSupervivencia]);
