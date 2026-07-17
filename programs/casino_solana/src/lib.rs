@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-
+use std::str::FromStr;
 
 // IMPORTANTE: Esta ID es temporal. Luego la actualizaremos.
 declare_id!("9bygE6GBpYoj6Yz77VEJEy1Rpf59uaWHcdNdzFwbg6Yu");
@@ -108,8 +108,8 @@ pub struct ComprarBloque<'info> {
     pub jugador_stats: Account<'info, EstadoJugador>,
     #[account(mut)]
     pub user: Signer<'info>, 
-    /// CHECK: Tesorería del juego
-    #[account(mut)]
+    /// CHECK: Tesorería del juego, address is validated to prevent draining funds
+    #[account(mut, address = Pubkey::from_str("567tt9cMNYc1wJ4ZVRpKcsiqsHfQZ3MHp1JTP1tiSiuL").unwrap())]
     pub tesoreria: AccountInfo<'info>, 
     pub system_program: Program<'info, System>,
 }
