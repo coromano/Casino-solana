@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-
+use solana_program::pubkey::pubkey;
 
 // IMPORTANTE: Esta ID es temporal. Luego la actualizaremos.
 declare_id!("9bygE6GBpYoj6Yz77VEJEy1Rpf59uaWHcdNdzFwbg6Yu");
@@ -108,8 +108,9 @@ pub struct ComprarBloque<'info> {
     pub jugador_stats: Account<'info, EstadoJugador>,
     #[account(mut)]
     pub user: Signer<'info>, 
-    /// CHECK: Tesorería del juego
-    #[account(mut)]
+    /// CHECK: Tesorería del juego (ahora validada por constraint de address)
+    // 🛡️ SECURITY FIX: Added address constraint to prevent users from supplying their own wallet and stealing funds
+    #[account(mut, address = pubkey!("E5dGmvzn2BWqCNAeo7QTrEZGAYnRePG74Ee9YB3cZ9rW"))]
     pub tesoreria: AccountInfo<'info>, 
     pub system_program: Program<'info, System>,
 }
