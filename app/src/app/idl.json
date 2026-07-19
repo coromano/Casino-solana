@@ -51,7 +51,8 @@
         },
         {
           "name": "tesoreria",
-          "writable": true
+          "writable": true,
+          "address": "GzzBRhBuAxKm9LLfuAG865SLForCG5aTrqj4ouRTjkBg"
         },
         {
           "name": "system_program",
